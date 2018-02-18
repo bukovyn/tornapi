@@ -15,8 +15,10 @@ class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
             (r"/", IndexHandler),
-            (r"/students", DatabaseHandler),
-            (r"/students/([0-9]+)", StudentHandler)
+            (r"/{table}".format(
+                table=Config.DATABASE['TABLE']), DatabaseHandler),
+            (r"/{table}/([0-9]+)".format(
+                table=Config.DATABASE['TABLE']), StudentHandler)
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
