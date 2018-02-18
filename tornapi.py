@@ -89,8 +89,8 @@ class BaseHandler(tornado.web.RequestHandler):
             fields += "`" + entry + "`='" + str(body[entry]) + "', "
         fields = fields[:-2]
 
-        query = "UPDATE students SET {details} WHERE id={id}".format(
-            details=fields, id=id)
+        query = "UPDATE {table} SET {details} WHERE id={id}".format(
+            table=Config.DATABASE['TABLE'], details=fields, id=id)
         self.execute(query)
 
     def insert_row(self, body):
@@ -107,8 +107,8 @@ class BaseHandler(tornado.web.RequestHandler):
         columns = "(" + ', '.join(columns) + ")"
         data = {'columns': columns, 'values': tuple(values)}
 
-        query = "INSERT INTO students {columns} VALUES {values}".format(columns=data['columns'],
-                                                                        values=data['values'])
+        query = "INSERT INTO {table} {columns} VALUES {values}".format(
+            table=Config.DATABASE['TABLE'], columns=data['columns'], values=data['values'])
         self.execute(query)
 
     def exists(self, id):
@@ -119,7 +119,8 @@ class BaseHandler(tornado.web.RequestHandler):
         Returns:
             True for success, False otherwise.
         """
-        query = "SELECT id from students where id={id}".format(id=id)
+        query = "SELECT id from {table} where id={id}".format(
+            table=Config.DATABASE['TABLE'], id=id)
         result = self.execute(query)
         return False if isinstance(result, tuple) else True
 
@@ -139,7 +140,7 @@ class DatabaseHandler(BaseHandler):
 
     def get(self):
         """Displays the 'students' table in the form of a JSON object."""
-        query = "SELECT * from students"
+        query = "SELECT * from {table}".format(table=Config.DATABASE['TABLE'])
         result = self.execute(query)
         self.render("result.html", data=result)
 
@@ -171,7 +172,8 @@ class DatabaseHandler(BaseHandler):
         if data:
             for entry in data:
                 if self.exists(entry):
-                    query = "DELETE FROM students WHERE id={id}".format(id=entry)
+                    query = "DELETE FROM {table} WHERE id={id}".format(
+                        table=Config.DATABASE['TABLE'], id=entry)
                     result = self.execute(query)
 
 
@@ -187,7 +189,8 @@ class StudentHandler(BaseHandler):
         Args:
             id (int): Student ID.
         """
-        query = "SELECT * from students where id = {id}".format(id=id)
+        query = "SELECT * from {table} where id = {id}".format(
+            table=Config.DATABASE['TABLE'], id=id)
         result = self.execute(query)
         self.render("result.html", data=result)
 
