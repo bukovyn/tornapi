@@ -1,0 +1,2 @@
+pymysql==0.7.2
+tornado==4.5.3

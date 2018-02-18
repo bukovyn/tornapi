@@ -1,0 +1,23 @@
+ .table {
+     border:solid 1px #dcdcdc;
+     text-align:center;
+}
+.table>tbody>tr>td {
+	vertical-align: middle;
+}
+ .column, p{
+     text-align:center;
+}
+#logo {
+     display:block;
+     margin:auto;
+}
+#fullscreen {
+	position:fixed;
+	width:100%;
+	height:100%;
+	display:flex;
+	justify-content:center;
+	align-items: center;
+}
+
