@@ -8,6 +8,6 @@ class Config:
         'USER': 'root',
         'PASSWORD': '',
         'SCHEMA': 'university',
-        'TABLE': 'test',
+        'TABLE': 'students',
         'CHARSET': 'utf8'
         }
