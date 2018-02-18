@@ -20,7 +20,7 @@ We need a [MySQL](https://dev.mysql.com/doc/mysql-getting-started/en/) database 
 
 I've included a SQL dump with some sample data in the [`sql`](https://github.com/bukovyn/tornapi/tree/master/sql) directory of this project. The [`config.py`](https://github.com/bukovyn/tornapi/blob/master/config.py) is preconfigured for this dump as root user with no password on local host and default sql port. Change according to your setup.
 
-If you choose to use my dump, create a database according to `config.py` in our case its `university`
+If you choose to use my dump, create a database according to `config.py`. In our case its `university`
 ```
 mysql
 > create database university;
