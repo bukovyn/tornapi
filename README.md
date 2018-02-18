@@ -56,7 +56,7 @@ python tornapi.py
 
 By default, if hosted locally the API is accessible at `127.0.0.1:8000`
 
-### How it works
+## :computer: How it works
 
 This can be seen at the `/` endpoint but for a general idea, the API supports the `GET, POST, PUT, DELETE` methods through the content in the request body which must be in the form of  `content-type:application/json`
 
