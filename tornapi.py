@@ -18,7 +18,7 @@ class Application(tornado.web.Application):
             (r"/{table}".format(
                 table=Config.DATABASE['TABLE']), DatabaseHandler),
             (r"/{table}/([0-9]+)".format(
-                table=Config.DATABASE['TABLE']), StudentHandler)
+                table=Config.DATABASE['TABLE']), TableHandler)
         ]
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
@@ -83,7 +83,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
         Args:
             body (dict): JSON object.
-            id (int): Student ID.
+            id (int): Item ID.
         """
         # Compose query
         fields = ""
@@ -117,7 +117,7 @@ class BaseHandler(tornado.web.RequestHandler):
         """Checks database if item exists.
 
         Args:
-            id (int): Student ID.
+            id (int): Item ID.
         Returns:
             True for success, False otherwise.
         """
@@ -136,12 +136,12 @@ class IndexHandler(BaseHandler):
 
 
 class DatabaseHandler(BaseHandler):
-    """Handles routes to '/students'
+    """Handles routes to '/table'
     Responsible for all the database manipulation.
     """
 
     def get(self):
-        """Displays the 'students' table in the form of a JSON object."""
+        """Displays the table in the form of a JSON object."""
         query = "SELECT * from {table}".format(table=Config.DATABASE['TABLE'])
         result = self.execute(query)
         self.render("result.html", data=result)
@@ -179,17 +179,17 @@ class DatabaseHandler(BaseHandler):
                     result = self.execute(query)
 
 
-class StudentHandler(BaseHandler):
-    """Handles routes to '/students/[0-9]+'
+class TableHandler(BaseHandler):
+    """Handles routes to '/table/[0-9]+'
     Uses regular expressions to handle numbers.
-    Displays student information based on id specified.
+    Displays table information based on id specified.
     """
 
     def get(self, id):
-        """Displays student information in the form of a JSON object.
+        """Displays table information in the form of a JSON object.
 
         Args:
-            id (int): Student ID.
+            id (int): Item ID.
         """
         query = "SELECT * from {table} where id = {id}".format(
             table=Config.DATABASE['TABLE'], id=id)
