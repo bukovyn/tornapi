@@ -64,7 +64,7 @@ This can be seen at the `/` endpoint but for a general idea, the API supports th
   <img src="https://github.com/bukovyn/tornapi/blob/master/static/img/index.png" alt="index">
 </p>
 
-To query the table, send a `GET` to the endpoint which is the table name, in our students example that would be `127.0.0.1:8000/students`. To query a specific student send a `GET` to the `/students/{id}` endpoint. For instance, a student with id 5 would be at `127.0.0.1:8000/students/5`.
+To query the table, send a `GET` to the endpoint which is the table name, in our students example that would be `127.0.0.1:8000/students`. To query a specific student send a `GET` to the `/students/{id}` endpoint. For instance, a student with the id `5` would be at `127.0.0.1:8000/students/5`.
 
 This endpoint is dynamic and changes based on the name of your table. For example's sake, I used the students table.
 
