@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="container">
-    <a href="https://www.github.com/bukovyn/tornapi"><img id="logo" src="https://image.ibb.co/iA3C1S/tornapi.png" alt="tornapi" border="0"></a>
+    <a href="https://www.github.com/bukovyn/tornapi"><img id="logo" src="{{ static_url("img/tornapi.png") }}" alt="tornapi" border="0"></a>
     <p>Test it with <b><a href="https://www.getpostman.com/">Postman</a></b>.
         Make sure the content-type of the request is '<b>application/json</b>'.</p>
     <p><b> Spoof one of the requests to the appropriate endpoint
@@ -30,17 +30,17 @@
             <tr class="default">
                 <td style="color:orange">POST</td>
                 <td>/students</td>
-                <td><img src="{{ static_url("post.png") }}"></td>
+                <td><img src="{{ static_url("img/post.png") }}"></td>
             </tr>
             <tr class="default">
                 <td style="color:green">PUT</td>
                 <td>/students</td>
-                <td><img src="{{ static_url("put.png") }}"></td>
+                <td><img src="{{ static_url("img/put.png") }}"></td>
             </tr>
             <tr class="default">
                 <td style="color:red">DELETE</td>
                 <td>/students</td>
-                <td><img src="{{ static_url("delete.png") }}"></td>
+                <td><img src="{{ static_url("img/delete.png") }}"></td>
             </tr>
             <tr class="default">
                 <td colspan="3"><i>All request body's support multiple keys, simply add a key with a different id. For instance... the 'DELETE' method - </i><code>{ "1":{}, "2":{}, "3":{} }</code></td>
