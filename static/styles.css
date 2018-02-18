@@ -1,11 +1,11 @@
- .table {
+.table {
      border:solid 1px #dcdcdc;
      text-align:center;
 }
 .table>tbody>tr>td {
 	vertical-align: middle;
 }
- .column, p{
+.column, p{
      text-align:center;
 }
 #logo {
