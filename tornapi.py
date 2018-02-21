@@ -86,13 +86,13 @@ class BaseHandler(tornado.web.RequestHandler):
             id (int): Item ID.
         """
         # Compose query
-        fields = ""
+        values = ""
         for entry in body:
-            fields += "`" + entry + "`='" + str(body[entry]) + "', "
-        fields = fields[:-2]
+            values += "`" + entry + "`='" + str(body[entry]) + "', "
+        values = values[:-2]
 
-        query = "UPDATE {table} SET {details} WHERE id={id}".format(
-            table=Config.DATABASE['TABLE'], details=fields, id=id)
+        query = "UPDATE {table} SET {values} WHERE id={id}".format(
+            table=Config.DATABASE['TABLE'], values=values, id=id)
         self.execute(query)
 
     def insert_row(self, body):
