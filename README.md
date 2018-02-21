@@ -39,7 +39,7 @@ Go into the repository directory and set up a [`virtualenv`](https://virtualenv.
 virtualenv venv
 ```
 
-Activate your `venv`
+Activate your environment
 ```
 source venv/bin/activate
 ```
