@@ -145,8 +145,17 @@ class DatabaseHandler(BaseHandler):
         query = "SELECT * from {table}".format(table=Config.DATABASE['TABLE'])
         result = self.execute(query)
         self.render("result.html", data=result)
-
+        
     def post(self):
+        """Inserts entries into the database.
+        Insertions are specific to the contents of the request.
+        """
+        data = self.json_data
+        if data:
+            for entry in data:
+                result = self.insert_row(data[entry])    
+
+    def put(self):
         """Updates database entries.
         Updates are specific to the contents of the request.
         """
@@ -156,15 +165,6 @@ class DatabaseHandler(BaseHandler):
                 id = entry
                 if self.exists(id):
                     result = self.update_row(data[entry], id)
-
-    def put(self):
-        """Inserts entries into the database.
-        Insertions are specific to the contents of the request.
-        """
-        data = self.json_data
-        if data:
-            for entry in data:
-                result = self.insert_row(data[entry])
 
     def delete(self):
         """Deletes entries from the database.
