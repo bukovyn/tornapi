@@ -10,7 +10,8 @@ from config import Config
 
 
 class Application(tornado.web.Application):
-	"""Tornado and database setup."""
+	""" Tornado and database setup.
+	"""
 
 	def __init__(self):
 		handlers = [
@@ -27,39 +28,43 @@ class Application(tornado.web.Application):
 		)
 		super(Application, self).__init__(handlers, **settings)
 
-		# Have a global connection to the database across all handlers
-		self.db = pymysql.connect(host=Config.DATABASE['HOST'],
-								  user=Config.DATABASE['USER'],
-								  password=Config.DATABASE['PASSWORD'],
-								  db=Config.DATABASE['SCHEMA'],
-								  charset=Config.DATABASE['CHARSET'],
-								  cursorclass=pymysql.cursors.DictCursor)
+		# initial database connection
+		self.db = pymysql.connect(
+			host=Config.DATABASE['HOST'],
+			user=Config.DATABASE['USER'],
+			password=Config.DATABASE['PASSWORD'],
+			db=Config.DATABASE['SCHEMA'],
+			charset=Config.DATABASE['CHARSET'],
+			cursorclass=pymysql.cursors.DictCursor
+		)
 
 
 class BaseHandler(tornado.web.RequestHandler):
-	"""Parent Handler class, child classes inherit methods to eliminate redundancy."""
+	""" Default handler.
+	"""
 
 	@property
 	def db(self):
-		"""Get database instance."""
+		""" Get database instance.
+		"""
 		return self.application.db
 
 	@property
 	def json_data(self):
-		"""Get request body in JSON."""
+		""" Get request body in JSON.
+		"""
 		try:
 			return tornado.escape.json_decode(self.request.body)
 		except:
-			# Empty JSON object if the body of the request is empty
 			return {}
 
 	def execute(self, query):
-		"""Executes a query on the database
+		""" Executes a query on the database.
 
 		Args:
 			query (str): The query being executed.
 		Returns:
-			A JSON object which is the result of the query.
+			The result of the query.
 		Raises:
 			HTTPError: A 404 if item does not exist in the database.
 		"""
@@ -78,77 +83,91 @@ class BaseHandler(tornado.web.RequestHandler):
 		else:
 			return result
 
-	def update_row(self, body, id):
-		"""Updates existing row(s) in the database.
+	def update_row(self, body, item_id):
+		""" Updates existing row(s) in the database.
 
 		Args:
-			body (dict): JSON object.
-			id (int): Item ID.
+			body (dict): Item(s)
+			item_id (int): Item ID.
 		"""
 		# Compose query
 		values = ""
 		for entry in body:
-			values += "`" + entry + "`='" + str(body[entry]) + "', "
+			values += "`{}`='{}', ".format(entry, body[entry])
 		values = values[:-2]
 
-		query = "UPDATE {table} SET {values} WHERE id={id}".format(
-			table=Config.DATABASE['TABLE'], values=values, id=id)
+		query = """
+			UPDATE {}
+			SET {}
+			WHERE id={}
+		""".format(Config.DATABASE['TABLE'], values, item_id)
 		self.execute(query)
 
 	def insert_row(self, body):
-		"""Inserts new row(s) into the database.
+		""" Inserts new row(s) into the database.
 
 		Args:
-			body (dict): JSON object.
+			body (dict): The data being inserted.
 		"""
-		# Compose query
 		columns, values = [], []
 		for entry in body:
 			columns.append(entry)
 			values.append(body[entry])
-		columns = "(" + ', '.join(columns) + ")"
-		data = {'columns': columns, 'values': tuple(values)}
 
-		query = "INSERT INTO {table} {columns} VALUES {values}".format(
-			table=Config.DATABASE['TABLE'], columns=data['columns'], values=data['values'])
+		columns = "({})".format(', '.join(columns))
+		data = {
+			'columns': columns,
+			'values': tuple(values)
+		}
+
+		query = """
+			INSERT INTO {} {}
+			VALUES {}
+		""".format(Config.DATABASE['TABLE'], data['columns'], data['values'])
 		self.execute(query)
 
-	def exists(self, id):
-		"""Checks database if item exists.
+	def exists(self, item_id):
+		""" Checks database if item exists.
 
 		Args:
-			id (int): Item ID.
+			item_id (int): Item ID.
 		Returns:
-			True for success, False otherwise.
+			(bool)
 		"""
-		query = "SELECT id from {table} where id={id}".format(
-			table=Config.DATABASE['TABLE'], id=id)
+		query = """
+			SELECT *
+			FROM {}
+			WHERE id={}
+		""".format(Config.DATABASE['TABLE'], item_id)
 		result = self.execute(query)
+
 		return False if isinstance(result, tuple) else True
 
 
 class IndexHandler(BaseHandler):
-	"""Handles routes to '/'"""
+	""" Handles routes to the default endpoint
+	"""
 
 	def get(self):
-		"""Renders a homepage with instructions on how the API works."""
+		""" Renders a homepage with instructions on how the API works.
+		"""
 		self.render("index.html")
 
 
 class DatabaseHandler(BaseHandler):
-	"""Handles routes to '/table'
-	Responsible for all the database manipulation.
+	""" Handles routes to '/table'
+		Responsible for all the database manipulation.
 	"""
 
 	def get(self):
-		"""Displays the table in the form of a JSON object."""
+		""" Displays the table in the form of a JSON object.
+		"""
 		query = "SELECT * from {table}".format(table=Config.DATABASE['TABLE'])
-		result = self.execute(query)
-		self.render("result.html", data=result)
+		self.render("result.html", data=self.execute(query))
 
 	def post(self):
-		"""Inserts entries into the database.
-		Insertions are specific to the contents of the request.
+		""" Inserts entries into the database.
+			Insertions are specific to the contents of the request.
 		"""
 		data = self.json_data
 		if data:
@@ -156,15 +175,14 @@ class DatabaseHandler(BaseHandler):
 				result = self.insert_row(data[entry])
 
 	def put(self):
-		"""Updates database entries.
-		Updates are specific to the contents of the request.
+		""" Updates database entries.
+			Updates are specific to the contents of the request.
 		"""
 		data = self.json_data
 		if data:
 			for entry in data:
-				id = entry
-				if self.exists(id):
-					result = self.update_row(data[entry], id)
+				if self.exists(entry):
+					result = self.update_row(data[entry], entry)
 
 	def delete(self):
 		"""Deletes entries from the database.
@@ -174,33 +192,39 @@ class DatabaseHandler(BaseHandler):
 		if data:
 			for entry in data:
 				if self.exists(entry):
-					query = "DELETE FROM {table} WHERE id={id}".format(
-						table=Config.DATABASE['TABLE'], id=entry)
+					query = """
+						DELETE
+						FROM {}
+						WHERE id={}
+					""".format(Config.DATABASE['TABLE'], entry)
 					result = self.execute(query)
 
 
 class TableHandler(BaseHandler):
-	"""Handles routes to '/table/[0-9]+'
-	Uses regular expressions to handle numbers.
-	Displays table information based on id specified.
+	""" Handles routes to '/table/[0-9]+'
+		Uses regular expressions to handle numbers.
+		Displays table information based on id specified.
 	"""
 
-	def get(self, id):
-		"""Displays table information in the form of a JSON object.
+	def get(self, item_id):
+		""" Displays table information in the form of a JSON object.
 
 		Args:
 			id (int): Item ID.
 		"""
-		query = "SELECT * from {table} where id = {id}".format(
-			table=Config.DATABASE['TABLE'], id=id)
-		result = self.execute(query)
-		self.render("result.html", data=result)
+		query = """
+			SELECT *
+			FROM {}
+			WHERE id={}
+		""".format(Config.DATABASE['TABLE'], item_id)
+		self.render("result.html", data=self.execute(query))
 
 
 def main():
-	"""Initiates the application."""
+	""" Initiates the application.
+	"""
 	http_server = tornado.httpserver.HTTPServer(Application())
-	# By default accessible at localhost port 8000 '127.0.0.1:8000'
+	# by default accessible at localhost port 8000 '127.0.0.1:8000'
 	http_server.listen(8000)
 	tornado.ioloop.IOLoop.current().start()
 
