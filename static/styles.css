@@ -1,16 +1,16 @@
 .table {
-     border:solid 1px #dcdcdc;
-     text-align:center;
+	border:solid 1px #dcdcdc;
+	text-align:center;
 }
 .table>tbody>tr>td {
 	vertical-align: middle;
 }
 .column, p{
-     text-align:center;
+	text-align:center;
 }
 #logo {
-     display:block;
-     margin:auto;
+	display:block;
+	margin:auto;
 }
 #fullscreen {
 	position:fixed;
@@ -20,4 +20,3 @@
 	justify-content:center;
 	align-items: center;
 }
-
