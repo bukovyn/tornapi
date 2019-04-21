@@ -9,7 +9,6 @@
 
 ## :computer: Setup
 
-Start by cloning this repo
 ```
 git clone https://github.com/bukovyn/tornapi
 ```
